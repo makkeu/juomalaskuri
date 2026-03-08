@@ -1,65 +1,154 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useMemo } from 'react';
+import { PartyType, DrinkType, DrinkCategory, PartyInput } from '@/lib/types';
+import { getPreset } from '@/lib/partyPresets';
+import { calculateShoppingList } from '@/lib/calculator';
+import PartyTypeSelector from '@/components/PartyTypeSelector';
+import GuestInput from '@/components/GuestInput';
+import CategorySelector from '@/components/CategorySelector';
+import DrinkTypeSelector from '@/components/DrinkTypeSelector';
+import ResultView from '@/components/ResultView';
+
+const STEP_LABELS = ['Juhlatyyppi', 'Vieraat', 'Kategoriat', 'Juomat', 'Ostoslista'];
 
 export default function Home() {
+  const [step, setStep] = useState(0);
+  const [partyType, setPartyType] = useState<PartyType | null>(null);
+  const [adults, setAdults] = useState(20);
+  const [children, setChildren] = useState(0);
+  const [durationHours, setDurationHours] = useState(4);
+  const [categories, setCategories] = useState<DrinkCategory[]>([]);
+  const [selectedDrinks, setSelectedDrinks] = useState<DrinkType[]>([]);
+
+  const handlePartyTypeSelect = (type: PartyType) => {
+    setPartyType(type);
+    const preset = getPreset(type);
+    setCategories(preset.categories);
+    setSelectedDrinks(preset.drinks);
+    setDurationHours(preset.defaultDurationHours);
+  };
+
+  const canProceed = () => {
+    switch (step) {
+      case 0: return partyType !== null;
+      case 1: return adults >= 1;
+      case 2: return categories.length > 0;
+      case 3: return selectedDrinks.length > 0;
+      default: return false;
+    }
+  };
+
+  const input: PartyInput = {
+    partyType: partyType ?? 'custom',
+    adults,
+    children,
+    durationHours,
+    categories,
+    selectedDrinks,
+  };
+
+  const result = useMemo(() => {
+    if (step === 4) return calculateShoppingList(input);
+    return null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, adults, children, durationHours, categories, selectedDrinks]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-gray-50">
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        {/* Header */}
+        <header className="text-center mb-8 print:mb-4">
+          <h1 className="text-3xl font-bold">🍷 Juomalaskuri</h1>
+          <p className="text-gray-500 mt-1">Laske juhlien juomatarve</p>
+        </header>
+
+        {/* Progress bar */}
+        <div className="flex items-center mb-8 print:hidden">
+          {STEP_LABELS.map((label, i) => (
+            <div key={label} className="flex-1 flex items-center">
+              <div className="flex flex-col items-center flex-1">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    i <= step
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-500'
+                  }`}
+                >
+                  {i < step ? '✓' : i + 1}
+                </div>
+                <span className="text-xs mt-1 text-gray-500 hidden sm:block">{label}</span>
+              </div>
+              {i < STEP_LABELS.length - 1 && (
+                <div
+                  className={`h-0.5 flex-1 ${
+                    i < step ? 'bg-blue-500' : 'bg-gray-200'
+                  }`}
+                />
+              )}
+            </div>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Step content */}
+        <div className="bg-white rounded-2xl shadow-sm border p-6 sm:p-8">
+          {step === 0 && (
+            <PartyTypeSelector selected={partyType} onSelect={handlePartyTypeSelect} />
+          )}
+          {step === 1 && (
+            <GuestInput
+              adults={adults}
+              children={children}
+              durationHours={durationHours}
+              onAdultsChange={setAdults}
+              onChildrenChange={setChildren}
+              onDurationChange={setDurationHours}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          )}
+          {step === 2 && (
+            <CategorySelector selected={categories} onChange={setCategories} />
+          )}
+          {step === 3 && (
+            <DrinkTypeSelector
+              categories={categories}
+              selected={selectedDrinks}
+              onChange={setSelectedDrinks}
+            />
+          )}
+          {step === 4 && result && <ResultView result={result} />}
         </div>
-      </main>
-    </div>
+
+        {/* Navigation */}
+        <div className="flex justify-between mt-6 print:hidden">
+          {step > 0 ? (
+            <button
+              onClick={() => setStep(step - 1)}
+              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+            >
+              Edellinen
+            </button>
+          ) : (
+            <div />
+          )}
+          {step < 4 && (
+            <button
+              onClick={() => setStep(step + 1)}
+              disabled={!canProceed()}
+              className="px-6 py-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Seuraava
+            </button>
+          )}
+          {step === 4 && (
+            <button
+              onClick={() => setStep(0)}
+              className="px-6 py-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
+            >
+              Aloita alusta
+            </button>
+          )}
+        </div>
+      </div>
+    </main>
   );
 }
