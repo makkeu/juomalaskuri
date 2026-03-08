@@ -1,27 +1,33 @@
 'use client';
 
 import { DrinkCategory } from '@/lib/types';
+import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
 
 interface Props {
   selected: DrinkCategory[];
   onChange: (categories: DrinkCategory[]) => void;
 }
 
-const CATEGORY_INFO: { value: DrinkCategory; label: string; description: string }[] = [
+const CATEGORY_INFO: { value: DrinkCategory; label: string; description: string; icon: string }[] = [
   {
     value: DrinkCategory.WELCOME,
     label: 'Alkumalja',
     description: '1 lasi per aikuinen saapuessa',
+    icon: '🥂',
   },
   {
     value: DrinkCategory.DINNER,
     label: 'Ruokajuomat',
     description: '3 lasia per aikuinen ruokailun aikana',
+    icon: '🍽️',
   },
   {
     value: DrinkCategory.EVENING,
     label: 'Iltajuomat',
     description: '2 juomaa/tunti illan aikana',
+    icon: '🌙',
   },
 ];
 
@@ -36,44 +42,37 @@ export default function CategorySelector({ selected, onChange }: Props) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-2">Juomakategoriat</h2>
-      <p className="text-gray-600 mb-6">Valitse mitä juomia tarjoillaan</p>
-      <div className="space-y-3 max-w-lg">
-        {CATEGORY_INFO.map((cat) => (
-          <button
-            key={cat.value}
-            onClick={() => toggle(cat.value)}
-            className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
-              selected.includes(cat.value)
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                  selected.includes(cat.value)
-                    ? 'border-blue-500 bg-blue-500'
-                    : 'border-gray-300'
-                }`}
-              >
-                {selected.includes(cat.value) && (
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                )}
+      <h2 className="text-xl font-semibold mb-1">Juomakategoriat</h2>
+      <p className="text-sm text-muted-foreground mb-6">Valitse mitä juomia tarjoillaan</p>
+      <div className="space-y-3">
+        {CATEGORY_INFO.map((cat) => {
+          const isChecked = selected.includes(cat.value);
+          return (
+            <Card
+              key={cat.value}
+              onClick={() => toggle(cat.value)}
+              className={cn(
+                'cursor-pointer transition-all duration-150 select-none',
+                isChecked
+                  ? 'ring-2 ring-primary border-primary bg-primary/5'
+                  : 'hover:border-muted-foreground/40 hover:shadow-sm'
+              )}
+            >
+              <div className="flex items-center gap-4 p-4">
+                <Checkbox
+                  checked={isChecked}
+                  onCheckedChange={() => toggle(cat.value)}
+                  id={`cat-${cat.value}`}
+                />
+                <span className="text-xl">{cat.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold">{cat.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{cat.description}</p>
+                </div>
               </div>
-              <div>
-                <span className="font-semibold block">{cat.label}</span>
-                <span className="text-sm text-gray-500">{cat.description}</span>
-              </div>
-            </div>
-          </button>
-        ))}
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
