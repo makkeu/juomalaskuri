@@ -1,23 +1,41 @@
 'use client';
 
+import { Printer } from 'lucide-react';
 import { ShoppingList, DrinkCategory } from '@/lib/types';
 import { DRINKS } from '@/lib/drinkData';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 interface Props {
   result: ShoppingList;
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  [DrinkCategory.WELCOME]: 'Alkumalja',
-  [DrinkCategory.DINNER]: 'Ruokajuomat',
-  [DrinkCategory.EVENING]: 'Iltajuomat',
-  non_alcoholic: 'Alkoholittomat (perus)',
+  [DrinkCategory.WELCOME]: '🥂 Alkumalja',
+  [DrinkCategory.DINNER]: '🍽️ Ruokajuomat',
+  [DrinkCategory.EVENING]: '🌙 Iltajuomat',
+  non_alcoholic: '💧 Alkoholittomat',
 };
+
+const categoryOrder = [
+  DrinkCategory.WELCOME,
+  DrinkCategory.DINNER,
+  DrinkCategory.EVENING,
+  'non_alcoholic',
+];
 
 export default function ResultView({ result }: Props) {
   const { items, alkoTotal, estoniaTotal, savings } = result;
 
-  // Group items by category
   const grouped = items.reduce(
     (acc, item) => {
       const key = item.category;
@@ -28,95 +46,104 @@ export default function ResultView({ result }: Props) {
     {} as Record<string, typeof items>
   );
 
-  const categoryOrder = [
-    DrinkCategory.WELCOME,
-    DrinkCategory.DINNER,
-    DrinkCategory.EVENING,
-    'non_alcoholic',
-  ];
-
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Ostoslista</h2>
+      <h2 className="text-xl font-semibold mb-6">Ostoslista</h2>
 
       <div className="space-y-6">
         {categoryOrder.map((cat) => {
           const catItems = grouped[cat];
           if (!catItems || catItems.length === 0) return null;
           return (
-            <div key={cat}>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                {CATEGORY_LABELS[cat] ?? cat}
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b text-left text-gray-500">
-                      <th className="py-2 pr-4">Tuote</th>
-                      <th className="py-2 pr-4 text-right">Määrä</th>
-                      <th className="py-2 pr-4 text-right">Alko</th>
-                      <th className="py-2 text-right">Viro</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+            <Card key={cat} className="overflow-hidden">
+              <CardHeader className="py-3 px-4 bg-muted/40">
+                <CardTitle className="text-sm font-semibold">
+                  {CATEGORY_LABELS[cat] ?? cat}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Tuote</TableHead>
+                      <TableHead className="text-right w-16">Määrä</TableHead>
+                      <TableHead className="text-right w-20">Alko</TableHead>
+                      <TableHead className="text-right w-20">Viro</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {catItems.map((item) => {
                       const info = DRINKS[item.drinkType];
                       return (
-                        <tr key={`${item.drinkType}-${item.category}`} className="border-b border-gray-100">
-                          <td className="py-2 pr-4">
-                            {info.name}
-                            <span className="text-gray-400 ml-1 text-xs">({item.unit})</span>
-                          </td>
-                          <td className="py-2 pr-4 text-right font-medium">{item.quantity}</td>
-                          <td className="py-2 pr-4 text-right">
+                        <TableRow key={`${item.drinkType}-${item.category}`}>
+                          <TableCell className="py-3">
+                            <span className="font-medium">{info.name}</span>
+                            <span className="text-muted-foreground text-xs ml-1.5">
+                              {item.unit}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right font-semibold py-3">
+                            {item.quantity}
+                          </TableCell>
+                          <TableCell className="text-right py-3 tabular-nums">
                             {(item.quantity * item.alkoPriceEach).toFixed(0)} €
-                          </td>
-                          <td className="py-2 text-right">
+                          </TableCell>
+                          <TableCell className="text-right py-3 tabular-nums">
                             {(item.quantity * item.estoniaPriceEach).toFixed(0)} €
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           );
         })}
       </div>
 
-      {/* Totals */}
-      <div className="mt-8 bg-gray-50 rounded-xl p-6">
-        <h3 className="text-lg font-bold mb-4">Hintavertailu</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white rounded-lg p-4 border">
-            <p className="text-sm text-gray-500">Alko (Suomi)</p>
-            <p className="text-2xl font-bold">{alkoTotal.toFixed(0)} €</p>
-          </div>
-          <div className="bg-white rounded-lg p-4 border">
-            <p className="text-sm text-gray-500">Viro</p>
-            <p className="text-2xl font-bold">{estoniaTotal.toFixed(0)} €</p>
-          </div>
+      <Separator className="my-6" />
+
+      {/* Price comparison */}
+      <div>
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+          Hintavertailu
+        </h3>
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Alko (Suomi)</p>
+              <p className="text-2xl font-bold tabular-nums">{alkoTotal.toFixed(0)} €</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Viro</p>
+              <p className="text-2xl font-bold tabular-nums">{estoniaTotal.toFixed(0)} €</p>
+            </CardContent>
+          </Card>
         </div>
         {savings > 0 && (
-          <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-            <p className="text-sm text-green-700">Säästö Virosta ostettaessa</p>
-            <p className="text-2xl font-bold text-green-700">{savings.toFixed(0)} €</p>
-            <p className="text-xs text-green-600 mt-1">
-              ({((savings / alkoTotal) * 100).toFixed(0)} % halvempi)
-            </p>
-          </div>
+          <Card className="border-green-200 bg-green-50">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm text-green-700 font-medium">Säästö Virosta ostettaessa</p>
+              <p className="text-3xl font-bold text-green-700 tabular-nums mt-1">
+                {savings.toFixed(0)} €
+              </p>
+              <p className="text-xs text-green-600 mt-1">
+                {((savings / alkoTotal) * 100).toFixed(0)} % halvempi
+              </p>
+            </CardContent>
+          </Card>
         )}
       </div>
 
       {/* Print button */}
       <div className="mt-6 print:hidden">
-        <button
-          onClick={() => window.print()}
-          className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition"
-        >
+        <Button variant="outline" onClick={() => window.print()}>
+          <Printer className="h-4 w-4 mr-2" />
           Tulosta ostoslista
-        </button>
+        </Button>
       </div>
     </div>
   );

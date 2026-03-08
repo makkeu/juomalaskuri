@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { Check } from 'lucide-react';
 import { PartyType, DrinkType, DrinkCategory, PartyInput } from '@/lib/types';
 import { getPreset } from '@/lib/partyPresets';
 import { calculateShoppingList } from '@/lib/calculator';
@@ -9,8 +10,17 @@ import GuestInput from '@/components/GuestInput';
 import CategorySelector from '@/components/CategorySelector';
 import DrinkTypeSelector from '@/components/DrinkTypeSelector';
 import ResultView from '@/components/ResultView';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
-const STEP_LABELS = ['Juhlatyyppi', 'Vieraat', 'Kategoriat', 'Juomat', 'Ostoslista'];
+const STEPS = [
+  'Juhlatyyppi',
+  'Vieraat',
+  'Kategoriat',
+  'Juomat',
+  'Ostoslista',
+];
 
 export default function Home() {
   const [step, setStep] = useState(0);
@@ -55,97 +65,104 @@ export default function Home() {
   }, [step, adults, children, durationHours, categories, selectedDrinks]);
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 py-8">
+    <main className="min-h-screen bg-muted/30 print:bg-white">
+      <div className="max-w-2xl mx-auto px-4 py-10">
         {/* Header */}
         <header className="text-center mb-8 print:mb-4">
-          <h1 className="text-3xl font-bold">🍷 Juomalaskuri</h1>
-          <p className="text-gray-500 mt-1">Laske juhlien juomatarve</p>
+          <h1 className="text-3xl font-bold tracking-tight">Juomalaskuri</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Laske juhlien juomatarve</p>
         </header>
 
-        {/* Progress bar */}
-        <div className="flex items-center mb-8 print:hidden">
-          {STEP_LABELS.map((label, i) => (
-            <div key={label} className="flex-1 flex items-center">
-              <div className="flex flex-col items-center flex-1">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    i <= step
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 text-gray-500'
-                  }`}
-                >
-                  {i < step ? '✓' : i + 1}
-                </div>
-                <span className="text-xs mt-1 text-gray-500 hidden sm:block">{label}</span>
-              </div>
-              {i < STEP_LABELS.length - 1 && (
-                <div
-                  className={`h-0.5 flex-1 ${
-                    i < step ? 'bg-blue-500' : 'bg-gray-200'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+        {/* Step indicator */}
+        <nav className="mb-6 print:hidden">
+          <ol className="flex items-start">
+            {STEPS.map((label, i) => {
+              const done = i < step;
+              const active = i === step;
+              return (
+                <li key={label} className="flex flex-1 last:flex-none">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={cn(
+                        'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold border-2 transition-all',
+                        done && 'bg-primary border-primary text-primary-foreground',
+                        active && 'border-primary text-primary bg-background shadow-sm',
+                        !done && !active && 'border-border text-muted-foreground bg-background'
+                      )}
+                    >
+                      {done ? <Check className="h-4 w-4" strokeWidth={3} /> : i + 1}
+                    </div>
+                    <span
+                      className={cn(
+                        'mt-1.5 text-xs text-center hidden sm:block w-16',
+                        active ? 'text-primary font-medium' : 'text-muted-foreground'
+                      )}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                  {i < STEPS.length - 1 && (
+                    <div
+                      className={cn(
+                        'h-px flex-1 mx-1 mt-4',
+                        i < step ? 'bg-primary' : 'bg-border'
+                      )}
+                    />
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
 
         {/* Step content */}
-        <div className="bg-white rounded-2xl shadow-sm border p-6 sm:p-8">
-          {step === 0 && (
-            <PartyTypeSelector selected={partyType} onSelect={handlePartyTypeSelect} />
-          )}
-          {step === 1 && (
-            <GuestInput
-              adults={adults}
-              children={children}
-              durationHours={durationHours}
-              onAdultsChange={setAdults}
-              onChildrenChange={setChildren}
-              onDurationChange={setDurationHours}
-            />
-          )}
-          {step === 2 && (
-            <CategorySelector selected={categories} onChange={setCategories} />
-          )}
-          {step === 3 && (
-            <DrinkTypeSelector
-              categories={categories}
-              selected={selectedDrinks}
-              onChange={setSelectedDrinks}
-            />
-          )}
-          {step === 4 && result && <ResultView result={result} />}
-        </div>
+        <Card className="shadow-sm">
+          <CardContent className="p-6 sm:p-8">
+            {step === 0 && (
+              <PartyTypeSelector selected={partyType} onSelect={handlePartyTypeSelect} />
+            )}
+            {step === 1 && (
+              <GuestInput
+                adults={adults}
+                children={children}
+                durationHours={durationHours}
+                onAdultsChange={setAdults}
+                onChildrenChange={setChildren}
+                onDurationChange={setDurationHours}
+              />
+            )}
+            {step === 2 && (
+              <CategorySelector selected={categories} onChange={setCategories} />
+            )}
+            {step === 3 && (
+              <DrinkTypeSelector
+                categories={categories}
+                selected={selectedDrinks}
+                onChange={setSelectedDrinks}
+              />
+            )}
+            {step === 4 && result && <ResultView result={result} />}
+          </CardContent>
+        </Card>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-6 print:hidden">
+        <div className="flex justify-between mt-4 print:hidden">
           {step > 0 ? (
-            <button
-              onClick={() => setStep(step - 1)}
-              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
-            >
-              Edellinen
-            </button>
+            <Button variant="outline" onClick={() => setStep(step - 1)}>
+              ← Edellinen
+            </Button>
           ) : (
             <div />
           )}
           {step < 4 && (
-            <button
-              onClick={() => setStep(step + 1)}
-              disabled={!canProceed()}
-              className="px-6 py-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Seuraava
-            </button>
+            <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
+              Seuraava →
+            </Button>
           )}
           {step === 4 && (
-            <button
-              onClick={() => setStep(0)}
-              className="px-6 py-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
-            >
+            <Button onClick={() => setStep(0)}>
               Aloita alusta
-            </button>
+            </Button>
           )}
         </div>
       </div>

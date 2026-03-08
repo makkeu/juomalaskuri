@@ -2,6 +2,8 @@
 
 import { DrinkType, DrinkCategory } from '@/lib/types';
 import { DRINKS } from '@/lib/drinkData';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 interface Props {
   categories: DrinkCategory[];
@@ -10,7 +12,6 @@ interface Props {
 }
 
 export default function DrinkTypeSelector({ categories, selected, onChange }: Props) {
-  // Filter drinks that belong to at least one selected category
   const availableDrinks = Object.values(DRINKS).filter((drink) =>
     drink.categories.some((cat) => categories.includes(cat))
   );
@@ -28,37 +29,43 @@ export default function DrinkTypeSelector({ categories, selected, onChange }: Pr
 
   const renderDrinkGroup = (title: string, drinks: typeof availableDrinks) => (
     <div>
-      <h3 className="text-lg font-semibold mb-3 text-gray-700">{title}</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {drinks.map((drink) => (
-          <button
-            key={drink.type}
-            onClick={() => toggle(drink.type)}
-            className={`p-3 rounded-lg border-2 text-sm text-left transition-all ${
-              selected.includes(drink.type)
-                ? 'border-blue-500 bg-blue-50 font-medium'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            {drink.name}
-          </button>
-        ))}
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+        {title}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {drinks.map((drink) => {
+          const isSelected = selected.includes(drink.type);
+          return (
+            <Button
+              key={drink.type}
+              variant={isSelected ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => toggle(drink.type)}
+              className="h-8 text-sm"
+            >
+              {drink.name}
+            </Button>
+          );
+        })}
       </div>
     </div>
   );
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-2">Valitse juomat</h2>
-      <p className="text-gray-600 mb-6">
-        Valitse haluamasi juomatyypit. Määrät lasketaan automaattisesti.
+      <h2 className="text-xl font-semibold mb-1">Valitse juomat</h2>
+      <p className="text-sm text-muted-foreground mb-6">
+        Määrät lasketaan automaattisesti valintojen perusteella.
       </p>
       <div className="space-y-6">
         {alcoholic.length > 0 && renderDrinkGroup('Alkoholilliset', alcoholic)}
+        {alcoholic.length > 0 && nonAlcoholic.length > 0 && <Separator />}
         {nonAlcoholic.length > 0 && renderDrinkGroup('Alkoholittomat', nonAlcoholic)}
       </div>
       {selected.length === 0 && (
-        <p className="mt-4 text-amber-600 text-sm">Valitse vähintään yksi juoma jatkaaksesi.</p>
+        <p className="mt-4 text-sm text-amber-600">
+          Valitse vähintään yksi juoma jatkaaksesi.
+        </p>
       )}
     </div>
   );
