@@ -73,6 +73,22 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     isAlcoholic: true,
     suggestedCategories: [DrinkCategory.EVENING],
   },
+  [DrinkType.COGNAC]: {
+    type: DrinkType.COGNAC,
+    name: 'Konjakki',
+    unit: 'pullo (70cl)',
+    servingsPerUnit: 11, // 70cl / 6cl per serving
+    isAlcoholic: true,
+    suggestedCategories: [DrinkCategory.AVEC],
+  },
+  [DrinkType.LIQUEUR]: {
+    type: DrinkType.LIQUEUR,
+    name: 'Likööri',
+    unit: 'pullo (70cl)',
+    servingsPerUnit: 11, // 70cl / 6cl per serving
+    isAlcoholic: true,
+    suggestedCategories: [DrinkCategory.AVEC],
+  },
   [DrinkType.NON_ALC_SPARKLING]: {
     type: DrinkType.NON_ALC_SPARKLING,
     name: 'Alkoholiton kuohuviini',

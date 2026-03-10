@@ -11,6 +11,8 @@ const ESTONIA_PRICES: Record<DrinkType, number> = {
   [DrinkType.LONKERO]: 24,
   [DrinkType.VODKA]: 10,
   [DrinkType.GIN]: 15,
+  [DrinkType.COGNAC]: 18,
+  [DrinkType.LIQUEUR]: 10,
   [DrinkType.NON_ALC_SPARKLING]: 5,
   [DrinkType.NON_ALC_BEER]: 18,
   [DrinkType.NON_ALC_CIDER]: 20,

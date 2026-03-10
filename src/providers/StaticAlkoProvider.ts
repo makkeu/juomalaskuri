@@ -11,6 +11,8 @@ const ALKO_PRICES: Record<DrinkType, number> = {
   [DrinkType.LONKERO]: 48,
   [DrinkType.VODKA]: 22,
   [DrinkType.GIN]: 28,
+  [DrinkType.COGNAC]: 32,
+  [DrinkType.LIQUEUR]: 20,
   [DrinkType.NON_ALC_SPARKLING]: 7,
   [DrinkType.NON_ALC_BEER]: 38,
   [DrinkType.NON_ALC_CIDER]: 42,

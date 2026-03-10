@@ -8,6 +8,8 @@ export enum DrinkType {
   LONKERO = 'lonkero',
   VODKA = 'vodka',
   GIN = 'gin',
+  COGNAC = 'cognac',
+  LIQUEUR = 'liqueur',
   NON_ALC_SPARKLING = 'non_alc_sparkling',
   NON_ALC_BEER = 'non_alc_beer',
   NON_ALC_CIDER = 'non_alc_cider',
@@ -19,6 +21,7 @@ export enum DrinkType {
 export enum DrinkCategory {
   WELCOME = 'welcome',
   DINNER = 'dinner',
+  AVEC = 'avec',
   EVENING = 'evening',
 }
 

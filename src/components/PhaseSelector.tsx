@@ -15,9 +15,10 @@ interface Props {
 }
 
 const PHASE_INFO: { value: DrinkCategory; label: string; icon: string; description: string }[] = [
-  { value: DrinkCategory.WELCOME, label: 'Alkumalja', icon: '🥂', description: '1 lasi per aikuinen' },
+  { value: DrinkCategory.WELCOME, label: 'Alkumalja',   icon: '🥂', description: '1 lasi per aikuinen' },
   { value: DrinkCategory.DINNER,  label: 'Ruokajuomat', icon: '🍽️', description: '1–3 lasia per aikuinen' },
-  { value: DrinkCategory.EVENING, label: 'Iltajuomat', icon: '🌙', description: '0,75–1,5 juomaa/tunti' },
+  { value: DrinkCategory.AVEC,    label: 'Kahviavec',   icon: '☕', description: '1 annos (6cl) / 80% aikuisista' },
+  { value: DrinkCategory.EVENING, label: 'Iltajuomat',  icon: '🌙', description: '0,75–1,5 juomaa/tunti' },
 ];
 
 const ALL_DRINKS = Object.values(DRINKS);

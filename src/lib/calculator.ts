@@ -55,14 +55,25 @@ export function calculateShoppingList(input: PartyInput): ShoppingList {
       (DrinkCategory.DINNER in phaseSelections ? 2 : 0)
   );
 
-  for (const phase of [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING]) {
+  for (const phase of [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.AVEC, DrinkCategory.EVENING]) {
     const drinks = phaseSelections[phase];
     if (!drinks || drinks.length === 0) continue;
 
     const alcDrinks = drinks.filter((dt) => DRINKS[dt].isAlcoholic);
     const nonAlcDrinks = drinks.filter((dt) => !DRINKS[dt].isAlcoholic);
 
-    // Servings per person for this phase
+    // Avec: fixed 1 serving per 80% of adults, no intensity multiplier, no children
+    if (phase === DrinkCategory.AVEC) {
+      if (alcDrinks.length > 0) {
+        const totalAvecServings = adults * 0.8;
+        distributeWeighted(alcDrinks, totalAvecServings).forEach((servings, dt) =>
+          addServings(dt, servings, phase)
+        );
+      }
+      continue;
+    }
+
+    // Servings per person for other phases
     let alcRate: number;
     let nonAlcAdultRate: number;
     let nonAlcChildRate: number;
@@ -74,12 +85,12 @@ export function calculateShoppingList(input: PartyInput): ShoppingList {
     } else if (phase === DrinkCategory.DINNER) {
       alcRate = rates.dinner;
       nonAlcAdultRate = rates.dinner;
-      nonAlcChildRate = 1; // children always get 1 glass regardless of intensity
+      nonAlcChildRate = 1;
     } else {
       // EVENING
       alcRate = rates.eveningPerHour * eveningHours;
       nonAlcAdultRate = rates.eveningPerHour * eveningHours;
-      nonAlcChildRate = 0.5 * eveningHours; // children drink less in the evening
+      nonAlcChildRate = 0.5 * eveningHours;
     }
 
     // 80% of adults drink alcohol, 20% prefer non-alcoholic

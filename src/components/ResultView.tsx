@@ -22,11 +22,12 @@ interface Props {
 
 const PHASE_LABELS: Record<DrinkCategory, string> = {
   [DrinkCategory.WELCOME]: '🥂 Alkumalja',
-  [DrinkCategory.DINNER]: '🍽️ Ruoka',
+  [DrinkCategory.DINNER]:  '🍽️ Ruoka',
+  [DrinkCategory.AVEC]:    '☕ Avec',
   [DrinkCategory.EVENING]: '🌙 Ilta',
 };
 
-const PHASE_ORDER = [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING];
+const PHASE_ORDER = [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.AVEC, DrinkCategory.EVENING];
 
 export default function ResultView({ result }: Props) {
   const [showBreakdown, setShowBreakdown] = useState(false);

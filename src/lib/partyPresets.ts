@@ -20,6 +20,7 @@ export const PARTY_PRESETS: PartyPreset[] = [
     phaseSelections: {
       [DrinkCategory.WELCOME]: [DrinkType.SPARKLING, DrinkType.NON_ALC_SPARKLING],
       [DrinkCategory.DINNER]: [DrinkType.RED_WINE, DrinkType.WHITE_WINE, DrinkType.BEER, DrinkType.JUICE],
+      [DrinkCategory.AVEC]: [DrinkType.COGNAC, DrinkType.LIQUEUR],
       [DrinkCategory.EVENING]: [DrinkType.BEER, DrinkType.LONKERO, DrinkType.RED_WINE, DrinkType.WHITE_WINE, DrinkType.SODA],
     },
   },
@@ -52,6 +53,7 @@ export const PARTY_PRESETS: PartyPreset[] = [
     defaultDurationHours: 6,
     phaseSelections: {
       [DrinkCategory.DINNER]: [DrinkType.RED_WINE, DrinkType.WHITE_WINE, DrinkType.NON_ALC_BEER],
+      [DrinkCategory.AVEC]: [DrinkType.COGNAC, DrinkType.LIQUEUR],
       [DrinkCategory.EVENING]: [DrinkType.BEER, DrinkType.LONKERO, DrinkType.RED_WINE, DrinkType.SODA],
     },
   },
