@@ -1,4 +1,4 @@
-import { DrinkType, DrinkCategory, PartyType } from './types';
+import { DrinkType, DrinkCategory, PartyType, IntensityLevel, PhaseSelections } from './types';
 
 export interface PartyPreset {
   type: PartyType;
@@ -6,8 +6,8 @@ export interface PartyPreset {
   emoji: string;
   description: string;
   defaultDurationHours: number;
-  categories: DrinkCategory[];
-  drinks: DrinkType[];
+  phaseSelections: PhaseSelections;
+  defaultIntensity?: IntensityLevel;
 }
 
 export const PARTY_PRESETS: PartyPreset[] = [
@@ -17,17 +17,11 @@ export const PARTY_PRESETS: PartyPreset[] = [
     emoji: '💍',
     description: 'Alkumalja, ruokajuomat ja iltajuhlat',
     defaultDurationHours: 8,
-    categories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
-    drinks: [
-      DrinkType.SPARKLING,
-      DrinkType.RED_WINE,
-      DrinkType.WHITE_WINE,
-      DrinkType.BEER,
-      DrinkType.LONKERO,
-      DrinkType.NON_ALC_SPARKLING,
-      DrinkType.JUICE,
-      DrinkType.MINERAL_WATER,
-    ],
+    phaseSelections: {
+      [DrinkCategory.WELCOME]: [DrinkType.SPARKLING, DrinkType.NON_ALC_SPARKLING],
+      [DrinkCategory.DINNER]: [DrinkType.RED_WINE, DrinkType.WHITE_WINE, DrinkType.BEER, DrinkType.JUICE],
+      [DrinkCategory.EVENING]: [DrinkType.BEER, DrinkType.LONKERO, DrinkType.RED_WINE, DrinkType.WHITE_WINE, DrinkType.SODA],
+    },
   },
   {
     type: 'birthday',
@@ -35,14 +29,9 @@ export const PARTY_PRESETS: PartyPreset[] = [
     emoji: '🎂',
     description: 'Rento illanvietto juomien kera',
     defaultDurationHours: 5,
-    categories: [DrinkCategory.EVENING],
-    drinks: [
-      DrinkType.BEER,
-      DrinkType.CIDER,
-      DrinkType.LONKERO,
-      DrinkType.SODA,
-      DrinkType.MINERAL_WATER,
-    ],
+    phaseSelections: {
+      [DrinkCategory.EVENING]: [DrinkType.BEER, DrinkType.CIDER, DrinkType.LONKERO, DrinkType.SODA],
+    },
   },
   {
     type: 'vappu_juhannus',
@@ -50,15 +39,10 @@ export const PARTY_PRESETS: PartyPreset[] = [
     emoji: '☀️',
     description: 'Alkumalja ja rento juhla',
     defaultDurationHours: 6,
-    categories: [DrinkCategory.WELCOME, DrinkCategory.EVENING],
-    drinks: [
-      DrinkType.SPARKLING,
-      DrinkType.BEER,
-      DrinkType.LONKERO,
-      DrinkType.CIDER,
-      DrinkType.SODA,
-      DrinkType.MINERAL_WATER,
-    ],
+    phaseSelections: {
+      [DrinkCategory.WELCOME]: [DrinkType.SPARKLING, DrinkType.NON_ALC_SPARKLING],
+      [DrinkCategory.EVENING]: [DrinkType.BEER, DrinkType.LONKERO, DrinkType.CIDER, DrinkType.SODA],
+    },
   },
   {
     type: 'pikkujoulut',
@@ -66,14 +50,10 @@ export const PARTY_PRESETS: PartyPreset[] = [
     emoji: '🎄',
     description: 'Ruokailua ja illanviettoa',
     defaultDurationHours: 6,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
-    drinks: [
-      DrinkType.RED_WINE,
-      DrinkType.WHITE_WINE,
-      DrinkType.BEER,
-      DrinkType.NON_ALC_BEER,
-      DrinkType.MINERAL_WATER,
-    ],
+    phaseSelections: {
+      [DrinkCategory.DINNER]: [DrinkType.RED_WINE, DrinkType.WHITE_WINE, DrinkType.NON_ALC_BEER],
+      [DrinkCategory.EVENING]: [DrinkType.BEER, DrinkType.LONKERO, DrinkType.RED_WINE, DrinkType.SODA],
+    },
   },
   {
     type: 'custom',
@@ -81,8 +61,7 @@ export const PARTY_PRESETS: PartyPreset[] = [
     emoji: '🎉',
     description: 'Valitse kaikki itse',
     defaultDurationHours: 4,
-    categories: [],
-    drinks: [],
+    phaseSelections: {},
   },
 ];
 

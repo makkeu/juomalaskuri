@@ -2,25 +2,18 @@
 
 import { useState, useMemo } from 'react';
 import { Check } from 'lucide-react';
-import { PartyType, DrinkType, DrinkCategory, PartyInput } from '@/lib/types';
+import { PartyType, IntensityLevel, PhaseSelections, PartyInput } from '@/lib/types';
 import { getPreset } from '@/lib/partyPresets';
 import { calculateShoppingList } from '@/lib/calculator';
 import PartyTypeSelector from '@/components/PartyTypeSelector';
 import GuestInput from '@/components/GuestInput';
-import CategorySelector from '@/components/CategorySelector';
-import DrinkTypeSelector from '@/components/DrinkTypeSelector';
+import PhaseSelector from '@/components/PhaseSelector';
 import ResultView from '@/components/ResultView';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-const STEPS = [
-  'Juhlatyyppi',
-  'Vieraat',
-  'Kategoriat',
-  'Juomat',
-  'Ostoslista',
-];
+const STEPS = ['Juhlatyyppi', 'Vieraat', 'Juomavalinnat', 'Ostoslista'];
 
 export default function Home() {
   const [step, setStep] = useState(0);
@@ -28,23 +21,25 @@ export default function Home() {
   const [adults, setAdults] = useState(20);
   const [children, setChildren] = useState(0);
   const [durationHours, setDurationHours] = useState(4);
-  const [categories, setCategories] = useState<DrinkCategory[]>([]);
-  const [selectedDrinks, setSelectedDrinks] = useState<DrinkType[]>([]);
+  const [intensity, setIntensity] = useState<IntensityLevel>('moderate');
+  const [phaseSelections, setPhaseSelections] = useState<PhaseSelections>({});
 
   const handlePartyTypeSelect = (type: PartyType) => {
     setPartyType(type);
     const preset = getPreset(type);
-    setCategories(preset.categories);
-    setSelectedDrinks(preset.drinks);
+    setPhaseSelections(preset.phaseSelections);
     setDurationHours(preset.defaultDurationHours);
+    if (preset.defaultIntensity) setIntensity(preset.defaultIntensity);
   };
+
+  const hasAnyDrinkSelected = Object.values(phaseSelections).some((drinks) => drinks && drinks.length > 0);
+  const activePhaseCount = Object.keys(phaseSelections).length;
 
   const canProceed = () => {
     switch (step) {
       case 0: return partyType !== null;
       case 1: return adults >= 1;
-      case 2: return categories.length > 0;
-      case 3: return selectedDrinks.length > 0;
+      case 2: return activePhaseCount > 0 && hasAnyDrinkSelected;
       default: return false;
     }
   };
@@ -54,15 +49,15 @@ export default function Home() {
     adults,
     children,
     durationHours,
-    categories,
-    selectedDrinks,
+    phaseSelections,
+    intensity,
   };
 
   const result = useMemo(() => {
-    if (step === 4) return calculateShoppingList(input);
+    if (step === 3) return calculateShoppingList(input);
     return null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, adults, children, durationHours, categories, selectedDrinks]);
+  }, [step, adults, children, durationHours, phaseSelections, intensity]);
 
   return (
     <main className="min-h-screen bg-muted/30 print:bg-white">
@@ -126,22 +121,20 @@ export default function Home() {
                 adults={adults}
                 children={children}
                 durationHours={durationHours}
+                intensity={intensity}
                 onAdultsChange={setAdults}
                 onChildrenChange={setChildren}
                 onDurationChange={setDurationHours}
+                onIntensityChange={setIntensity}
               />
             )}
             {step === 2 && (
-              <CategorySelector selected={categories} onChange={setCategories} />
-            )}
-            {step === 3 && (
-              <DrinkTypeSelector
-                categories={categories}
-                selected={selectedDrinks}
-                onChange={setSelectedDrinks}
+              <PhaseSelector
+                phaseSelections={phaseSelections}
+                onChange={setPhaseSelections}
               />
             )}
-            {step === 4 && result && <ResultView result={result} />}
+            {step === 3 && result && <ResultView result={result} />}
           </CardContent>
         </Card>
 
@@ -154,12 +147,12 @@ export default function Home() {
           ) : (
             <div />
           )}
-          {step < 4 && (
+          {step < 3 && (
             <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
               Seuraava →
             </Button>
           )}
-          {step === 4 && (
+          {step === 3 && (
             <Button onClick={() => setStep(0)}>
               Aloita alusta
             </Button>

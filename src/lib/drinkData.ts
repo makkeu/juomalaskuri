@@ -7,7 +7,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (75cl)',
     servingsPerUnit: 6,
     isAlcoholic: true,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.WHITE_WINE]: {
     type: DrinkType.WHITE_WINE,
@@ -15,7 +15,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (75cl)',
     servingsPerUnit: 6,
     isAlcoholic: true,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.ROSE]: {
     type: DrinkType.ROSE,
@@ -23,7 +23,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (75cl)',
     servingsPerUnit: 6,
     isAlcoholic: true,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.SPARKLING]: {
     type: DrinkType.SPARKLING,
@@ -31,7 +31,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (75cl)',
     servingsPerUnit: 6,
     isAlcoholic: true,
-    categories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.BEER]: {
     type: DrinkType.BEER,
@@ -39,7 +39,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: '24-pack',
     servingsPerUnit: 24,
     isAlcoholic: true,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.CIDER]: {
     type: DrinkType.CIDER,
@@ -47,7 +47,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: '24-pack',
     servingsPerUnit: 24,
     isAlcoholic: true,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.LONKERO]: {
     type: DrinkType.LONKERO,
@@ -55,7 +55,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: '24-pack',
     servingsPerUnit: 24,
     isAlcoholic: true,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.VODKA]: {
     type: DrinkType.VODKA,
@@ -63,7 +63,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (70cl)',
     servingsPerUnit: 16,
     isAlcoholic: true,
-    categories: [DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.EVENING],
   },
   [DrinkType.GIN]: {
     type: DrinkType.GIN,
@@ -71,7 +71,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (70cl)',
     servingsPerUnit: 16,
     isAlcoholic: true,
-    categories: [DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.EVENING],
   },
   [DrinkType.NON_ALC_SPARKLING]: {
     type: DrinkType.NON_ALC_SPARKLING,
@@ -79,7 +79,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (75cl)',
     servingsPerUnit: 6,
     isAlcoholic: false,
-    categories: [DrinkCategory.WELCOME, DrinkCategory.DINNER],
+    suggestedCategories: [DrinkCategory.WELCOME, DrinkCategory.DINNER],
   },
   [DrinkType.NON_ALC_BEER]: {
     type: DrinkType.NON_ALC_BEER,
@@ -87,7 +87,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: '24-pack',
     servingsPerUnit: 24,
     isAlcoholic: false,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.NON_ALC_CIDER]: {
     type: DrinkType.NON_ALC_CIDER,
@@ -95,7 +95,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: '24-pack',
     servingsPerUnit: 24,
     isAlcoholic: false,
-    categories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.JUICE]: {
     type: DrinkType.JUICE,
@@ -103,7 +103,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (1,5L)',
     servingsPerUnit: 6,
     isAlcoholic: false,
-    categories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.SODA]: {
     type: DrinkType.SODA,
@@ -111,7 +111,7 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (1,5L)',
     servingsPerUnit: 6,
     isAlcoholic: false,
-    categories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
   [DrinkType.MINERAL_WATER]: {
     type: DrinkType.MINERAL_WATER,
@@ -119,6 +119,6 @@ export const DRINKS: Record<DrinkType, DrinkInfo> = {
     unit: 'pullo (1,5L)',
     servingsPerUnit: 6,
     isAlcoholic: false,
-    categories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
+    suggestedCategories: [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING],
   },
 };

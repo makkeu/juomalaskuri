@@ -1,6 +1,7 @@
 'use client';
 
-import { Printer } from 'lucide-react';
+import { useState } from 'react';
+import { Printer, ChevronDown, ChevronUp } from 'lucide-react';
 import { ShoppingList, DrinkCategory } from '@/lib/types';
 import { DRINKS } from '@/lib/drinkData';
 import { Button } from '@/components/ui/button';
@@ -19,46 +20,125 @@ interface Props {
   result: ShoppingList;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
+const PHASE_LABELS: Record<DrinkCategory, string> = {
   [DrinkCategory.WELCOME]: '🥂 Alkumalja',
-  [DrinkCategory.DINNER]: '🍽️ Ruokajuomat',
-  [DrinkCategory.EVENING]: '🌙 Iltajuomat',
-  non_alcoholic: '💧 Alkoholittomat',
+  [DrinkCategory.DINNER]: '🍽️ Ruoka',
+  [DrinkCategory.EVENING]: '🌙 Ilta',
 };
 
-const categoryOrder = [
-  DrinkCategory.WELCOME,
-  DrinkCategory.DINNER,
-  DrinkCategory.EVENING,
-  'non_alcoholic',
-];
+const PHASE_ORDER = [DrinkCategory.WELCOME, DrinkCategory.DINNER, DrinkCategory.EVENING];
 
 export default function ResultView({ result }: Props) {
+  const [showBreakdown, setShowBreakdown] = useState(false);
   const { items, alkoTotal, estoniaTotal, savings } = result;
 
-  const grouped = items.reduce(
-    (acc, item) => {
-      const key = item.category;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(item);
-      return acc;
-    },
-    {} as Record<string, typeof items>
+  const alcoholic = items.filter((i) => DRINKS[i.drinkType].isAlcoholic);
+  const nonAlcoholic = items.filter((i) => !DRINKS[i.drinkType].isAlcoholic);
+
+  // Which phases actually appear in any breakdown
+  const activePhases = PHASE_ORDER.filter((phase) =>
+    items.some((i) => i.phaseBreakdown && i.phaseBreakdown[phase] !== undefined)
   );
 
   return (
     <div>
       <h2 className="text-xl font-semibold mb-6">Ostoslista</h2>
 
-      <div className="space-y-6">
-        {categoryOrder.map((cat) => {
-          const catItems = grouped[cat];
-          if (!catItems || catItems.length === 0) return null;
-          return (
-            <Card key={cat} className="overflow-hidden">
-              <CardHeader className="py-3 px-4 bg-muted/40">
-                <CardTitle className="text-sm font-semibold">
-                  {CATEGORY_LABELS[cat] ?? cat}
+      <Card className="overflow-hidden">
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tuote</TableHead>
+                <TableHead className="text-right w-16">Määrä</TableHead>
+                <TableHead className="text-right w-20">Alko</TableHead>
+                <TableHead className="text-right w-20">Viro</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {alcoholic.length > 0 && (
+                <TableRow className="bg-muted/30 hover:bg-muted/30">
+                  <TableCell
+                    colSpan={4}
+                    className="py-1.5 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
+                    Alkoholilliset
+                  </TableCell>
+                </TableRow>
+              )}
+              {alcoholic.map((item) => {
+                const info = DRINKS[item.drinkType];
+                return (
+                  <TableRow key={item.drinkType}>
+                    <TableCell className="py-3">
+                      <span className="font-medium">{info.name}</span>
+                      <span className="text-muted-foreground text-xs ml-1.5">{item.unit}</span>
+                    </TableCell>
+                    <TableCell className="text-right font-semibold py-3">{item.quantity}</TableCell>
+                    <TableCell className="text-right py-3 tabular-nums">
+                      {(item.quantity * item.alkoPriceEach).toFixed(0)} €
+                    </TableCell>
+                    <TableCell className="text-right py-3 tabular-nums">
+                      {(item.quantity * item.estoniaPriceEach).toFixed(0)} €
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+
+              {nonAlcoholic.length > 0 && (
+                <TableRow className="bg-muted/30 hover:bg-muted/30">
+                  <TableCell
+                    colSpan={4}
+                    className="py-1.5 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
+                    Alkoholittomat
+                  </TableCell>
+                </TableRow>
+              )}
+              {nonAlcoholic.map((item) => {
+                const info = DRINKS[item.drinkType];
+                return (
+                  <TableRow key={item.drinkType}>
+                    <TableCell className="py-3">
+                      <span className="font-medium">{info.name}</span>
+                      <span className="text-muted-foreground text-xs ml-1.5">{item.unit}</span>
+                    </TableCell>
+                    <TableCell className="text-right font-semibold py-3">{item.quantity}</TableCell>
+                    <TableCell className="text-right py-3 tabular-nums">
+                      {(item.quantity * item.alkoPriceEach).toFixed(0)} €
+                    </TableCell>
+                    <TableCell className="text-right py-3 tabular-nums">
+                      {(item.quantity * item.estoniaPriceEach).toFixed(0)} €
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Phase breakdown toggle */}
+      {activePhases.length > 1 && (
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => setShowBreakdown((v) => !v)}
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground cursor-pointer"
+          >
+            {showBreakdown ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+            Erittely vaiheittain
+          </button>
+
+          {showBreakdown && (
+            <Card className="overflow-hidden mt-2">
+              <CardHeader className="py-2 px-4 bg-muted/40">
+                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Arvioitu tarve vaiheittain (annoksina)
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -66,31 +146,31 @@ export default function ResultView({ result }: Props) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Tuote</TableHead>
-                      <TableHead className="text-right w-16">Määrä</TableHead>
-                      <TableHead className="text-right w-20">Alko</TableHead>
-                      <TableHead className="text-right w-20">Viro</TableHead>
+                      {activePhases.map((phase) => (
+                        <TableHead key={phase} className="text-right w-24 text-xs">
+                          {PHASE_LABELS[phase]}
+                        </TableHead>
+                      ))}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {catItems.map((item) => {
+                    {items.map((item) => {
                       const info = DRINKS[item.drinkType];
+                      const hasBreakdown = activePhases.some(
+                        (p) => item.phaseBreakdown?.[p] !== undefined
+                      );
+                      if (!hasBreakdown) return null;
                       return (
-                        <TableRow key={`${item.drinkType}-${item.category}`}>
-                          <TableCell className="py-3">
-                            <span className="font-medium">{info.name}</span>
-                            <span className="text-muted-foreground text-xs ml-1.5">
-                              {item.unit}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-right font-semibold py-3">
-                            {item.quantity}
-                          </TableCell>
-                          <TableCell className="text-right py-3 tabular-nums">
-                            {(item.quantity * item.alkoPriceEach).toFixed(0)} €
-                          </TableCell>
-                          <TableCell className="text-right py-3 tabular-nums">
-                            {(item.quantity * item.estoniaPriceEach).toFixed(0)} €
-                          </TableCell>
+                        <TableRow key={item.drinkType}>
+                          <TableCell className="py-2 text-sm">{info.name}</TableCell>
+                          {activePhases.map((phase) => {
+                            const servings = item.phaseBreakdown?.[phase];
+                            return (
+                              <TableCell key={phase} className="text-right py-2 tabular-nums text-sm">
+                                {servings !== undefined ? Math.round(servings) : '—'}
+                              </TableCell>
+                            );
+                          })}
                         </TableRow>
                       );
                     })}
@@ -98,9 +178,9 @@ export default function ResultView({ result }: Props) {
                 </Table>
               </CardContent>
             </Card>
-          );
-        })}
-      </div>
+          )}
+        </div>
+      )}
 
       <Separator className="my-6" />
 

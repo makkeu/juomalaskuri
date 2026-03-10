@@ -3,23 +3,30 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { Separator } from '@/components/ui/separator';
+import IntensitySelector from '@/components/IntensitySelector';
+import { IntensityLevel } from '@/lib/types';
 
 interface Props {
   adults: number;
   children: number;
   durationHours: number;
+  intensity: IntensityLevel;
   onAdultsChange: (n: number) => void;
   onChildrenChange: (n: number) => void;
   onDurationChange: (n: number) => void;
+  onIntensityChange: (v: IntensityLevel) => void;
 }
 
 export default function GuestInput({
   adults,
   children,
   durationHours,
+  intensity,
   onAdultsChange,
   onChildrenChange,
   onDurationChange,
+  onIntensityChange,
 }: Props) {
   return (
     <div>
@@ -115,6 +122,10 @@ export default function GuestInput({
           vierasta, kesto{' '}
           <span className="font-semibold text-foreground">{durationHours} h</span>
         </div>
+
+        <Separator />
+
+        <IntensitySelector value={intensity} onChange={onIntensityChange} />
       </div>
     </div>
   );

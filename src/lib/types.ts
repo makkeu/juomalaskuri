@@ -23,23 +23,28 @@ export enum DrinkCategory {
 }
 
 export type PartyType = 'wedding' | 'birthday' | 'vappu_juhannus' | 'pikkujoulut' | 'custom';
+export type IntensityLevel = 'light' | 'moderate' | 'heavy';
+
+// Key = phase (if exists, phase is active), value = drinks selected for that phase
+export type PhaseSelections = Partial<Record<DrinkCategory, DrinkType[]>>;
 
 export interface PartyInput {
   partyType: PartyType;
   adults: number;
   children: number;
   durationHours: number;
-  categories: DrinkCategory[];
-  selectedDrinks: DrinkType[];
+  phaseSelections: PhaseSelections;
+  intensity: IntensityLevel;
 }
 
 export interface ShoppingListItem {
   drinkType: DrinkType;
-  category: DrinkCategory | 'non_alcoholic';
   quantity: number;
   unit: string;
   alkoPriceEach: number;
   estoniaPriceEach: number;
+  // Raw servings per phase, for breakdown display
+  phaseBreakdown?: Partial<Record<DrinkCategory, number>>;
 }
 
 export interface ShoppingList {
@@ -55,5 +60,6 @@ export interface DrinkInfo {
   unit: string;
   servingsPerUnit: number;
   isAlcoholic: boolean;
-  categories: DrinkCategory[];
+  // UI hint: which phases this drink is typically served in
+  suggestedCategories: DrinkCategory[];
 }
