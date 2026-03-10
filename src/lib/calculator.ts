@@ -9,6 +9,29 @@ const RATES = {
   heavy:    { welcome: 1, dinner: 3, eveningPerHour: 1.5 },
 };
 
+// Popularity weights for alcoholic drinks: guests choose one type and drink it
+// throughout the phase, so total servings are split proportionally, not equally.
+// Based on Finnish consumption statistics and catering guides.
+// Non-alcoholic drinks use equal split (weight 1) since variety matters less.
+const DRINK_WEIGHTS: Partial<Record<DrinkType, number>> = {
+  [DrinkType.BEER]:       4,
+  [DrinkType.CIDER]:      3,
+  [DrinkType.LONKERO]:    3,
+  [DrinkType.RED_WINE]:   2,
+  [DrinkType.WHITE_WINE]: 2,
+  [DrinkType.VODKA]:      2,
+  [DrinkType.ROSE]:       1.5,
+  [DrinkType.SPARKLING]:  1.5,
+  [DrinkType.GIN]:        1.5,
+};
+
+function distributeWeighted(drinks: DrinkType[], total: number): Map<DrinkType, number> {
+  const totalWeight = drinks.reduce((sum, dt) => sum + (DRINK_WEIGHTS[dt] ?? 1), 0);
+  const result = new Map<DrinkType, number>();
+  drinks.forEach((dt) => result.set(dt, (total * (DRINK_WEIGHTS[dt] ?? 1)) / totalWeight));
+  return result;
+}
+
 export function calculateShoppingList(input: PartyInput): ShoppingList {
   const { adults, children, durationHours, phaseSelections, intensity } = input;
   const rates = RATES[intensity];
@@ -65,8 +88,9 @@ export function calculateShoppingList(input: PartyInput): ShoppingList {
 
     if (alcDrinks.length > 0) {
       const totalAlcServings = drinkingAdults * alcRate;
-      const perDrink = totalAlcServings / alcDrinks.length;
-      alcDrinks.forEach((dt) => addServings(dt, perDrink, phase));
+      distributeWeighted(alcDrinks, totalAlcServings).forEach((servings, dt) =>
+        addServings(dt, servings, phase)
+      );
     }
 
     if (nonAlcDrinks.length > 0) {
